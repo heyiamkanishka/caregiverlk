@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Profiles Service (Node.js/Express)
+  profiles-service:
+    build: ./profiles
+    container_name: profiles-service
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./profiles/.env
+    environment:
+      - PORT=5001
+    networks:
+      - caregivers-network
+
+  # Reviews Service (Python/Flask)
+  reviews-service:
+    build: ./reviews
+    container_name: reviews-service
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./reviews/.env
+    environment:
+      - PORT=5002
+    networks:
+      - caregivers-network
+
+  # Main Frontend (React/Vite served by Nginx)
+  main-frontend:
+    build: ./frontend
+    container_name: main-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - profiles-service
+      - reviews-service
+    networks:
+      - caregivers-network
+
+  # Admin Frontend (React/Vite served by Nginx)
+  admin-frontend:
+    build: ./admin/frontend
+    container_name: admin-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - profiles-service
+      - reviews-service
+    networks:
+      - caregivers-network
+
+networks:
+  caregivers-network:
+    driver: bridge
