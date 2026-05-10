@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: caregivers-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: caregivers.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: main-frontend-service
+            port:
+              number: 80
+      - path: /admin
+        pathType: Prefix
+        backend:
+          service:
+            name: admin-frontend-service
+            port:
+              number: 80
+      - path: /api/profiles
+        pathType: Prefix
+        backend:
+          service:
+            name: profiles-service
+            port:
+              number: 5001
+      - path: /api/reviews
+        pathType: Prefix
+        backend:
+          service:
+            name: reviews-service
+            port:
+              number: 5002
